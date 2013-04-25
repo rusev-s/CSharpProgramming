@@ -9,10 +9,6 @@ namespace ComparePerformanceOperationsForDifferentTypes
     {
         delegate T OperationDelegateGeneric<T>(T[] arr);
 
-        delegate byte OperationDelegate(byte[] arr);
-
-        delegate int OperationDelegateInt(int[] arr);
-
         public static T Add<T>(IList<T> numbers)
         {
             var operations = Operations<T>.Default;
@@ -45,59 +41,8 @@ namespace ComparePerformanceOperationsForDifferentTypes
             return result;
         }
 
-        private static float NextFloat(Random randomGenerator)
-        {
-            double mantissa = (randomGenerator.NextDouble() * 2.0) - 1.0;
-            double exponent = Math.Pow(2.0, randomGenerator.Next(-126, 128));
-            return (float)(mantissa * exponent);
-        }
-
-        private static long NextLong(Random randomGenerator)
-        {
-
-            long value = (long)((randomGenerator.NextDouble() * 2.0 - 1.0) * long.MaxValue);
-            return value;
-        }
-
-        public static decimal NextDecimal(Random randomGenerator)
-        {
-            //a fairly random decimal number :D
-            if (randomGenerator.Next(2) % 2 == 0)
-            {
-                return 1.000000008m;
-            }
-            else
-            {
-                return -1.0000000008m;
-            }
-        }
-
         public static void Main()
         {
-            //byte[] randomBytes = new byte[10000000];
-            //int[] randomInts = new int[10000000];
-            //long[] randomLongs = new long[10000000];
-            //float[] randomFloats = new float[10000000];
-            //double[] randomDoubles = new double[10000000];
-            //decimal[] randomDecimals = new decimal[10000000];
-
-            //Random randomGenerator = new Random();
-            //for (int i = 0; i < randomBytes.Length; i++)
-            //{
-            //    randomBytes[i] = (byte)randomGenerator.Next(1, 255);
-            //    randomInts[i] = randomGenerator.Next(1, int.MaxValue);
-            //    randomLongs[i] = NextLong(randomGenerator);
-            //    randomFloats[i] = NextFloat(randomGenerator);
-            //    randomDecimals[i] = NextDecimal(randomGenerator);
-            //}
-
-            //List<Type> typesToCheck = new List<Type> { typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal) };
-
-            //foreach (var type in typesToCheck)
-            //{
-            //    OperationDelegateGeneric<type> genericOperations = new OperationDelegateGeneric<type>()[4];
-            //}
-
             OperationDelegateGeneric<int>[] intOperations = new OperationDelegateGeneric<int>[4];
             intOperations[0] = new OperationDelegateGeneric<int>(Add<int>);
             intOperations[1] = new OperationDelegateGeneric<int>(Subtract<int>);
