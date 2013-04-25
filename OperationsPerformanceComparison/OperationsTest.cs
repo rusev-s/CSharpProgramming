@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace ComparePerformanceOperationsForDifferentTypes
 {
@@ -51,7 +52,8 @@ namespace ComparePerformanceOperationsForDifferentTypes
             return (float)(mantissa * exponent);
         }
 
-        private static long NextLong(Random randomGenerator) {
+        private static long NextLong(Random randomGenerator)
+        {
 
             long value = (long)((randomGenerator.NextDouble() * 2.0 - 1.0) * long.MaxValue);
             return value;
@@ -60,9 +62,9 @@ namespace ComparePerformanceOperationsForDifferentTypes
         public static decimal NextDecimal(Random randomGenerator)
         {
             //a fairly random decimal number :D
-            if (randomGenerator.Next(2) %2 == 0)
+            if (randomGenerator.Next(2) % 2 == 0)
             {
-                return 1.000000008m;    
+                return 1.000000008m;
             }
             else
             {
@@ -72,25 +74,29 @@ namespace ComparePerformanceOperationsForDifferentTypes
 
         public static void Main()
         {
-            byte[] randomBytes = new byte[10000000];
-            int[] randomInts = new int[10000000];
-            long[] randomLongs = new long[10000000];
-            float[] randomFloats = new float[10000000];
-            double[] randomDoubles = new double[10000000];
-            decimal[] randomDecimals = new decimal[10000000];
+            //byte[] randomBytes = new byte[10000000];
+            //int[] randomInts = new int[10000000];
+            //long[] randomLongs = new long[10000000];
+            //float[] randomFloats = new float[10000000];
+            //double[] randomDoubles = new double[10000000];
+            //decimal[] randomDecimals = new decimal[10000000];
 
-            Random randomGenerator = new Random();
-            for (int i = 0; i < randomBytes.Length; i++)
-            {
-                randomBytes[i] = (byte)randomGenerator.Next(1, 255);
-                randomInts[i] = randomGenerator.Next(1, int.MaxValue);
-                randomLongs[i] = NextLong(randomGenerator);
-                randomFloats[i] = NextFloat(randomGenerator);
-                randomDecimals[i] = NextDecimal(randomGenerator);
-
-            }
+            //Random randomGenerator = new Random();
+            //for (int i = 0; i < randomBytes.Length; i++)
+            //{
+            //    randomBytes[i] = (byte)randomGenerator.Next(1, 255);
+            //    randomInts[i] = randomGenerator.Next(1, int.MaxValue);
+            //    randomLongs[i] = NextLong(randomGenerator);
+            //    randomFloats[i] = NextFloat(randomGenerator);
+            //    randomDecimals[i] = NextDecimal(randomGenerator);
+            //}
 
             //List<Type> typesToCheck = new List<Type> { typeof(int), typeof(long), typeof(float), typeof(double), typeof(decimal) };
+
+            //foreach (var type in typesToCheck)
+            //{
+            //    OperationDelegateGeneric<type> genericOperations = new OperationDelegateGeneric<type>()[4];
+            //}
 
             OperationDelegateGeneric<int>[] intOperations = new OperationDelegateGeneric<int>[4];
             intOperations[0] = new OperationDelegateGeneric<int>(Add<int>);
@@ -124,60 +130,100 @@ namespace ComparePerformanceOperationsForDifferentTypes
 
             foreach (var operation in intOperations)
             {
-                DateTime startTime = DateTime.Now;
-                var resultInt = operation(randomInts);
-                DateTime endTime = DateTime.Now;
-                TimeSpan elapsed = endTime - startTime;
-                Console.WriteLine(operation.Method.Name + " for int takes: " 
-                    + elapsed.TotalSeconds.ToString("00.0000") + " secs");
+                Stopwatch stopWatch = new Stopwatch();
+
+                int[] arr = { int.MaxValue, int.MinValue };
+                double elapsed = 0;
+                for (int i = 0; i < 1000000; i++)
+                {
+                    stopWatch.Start();
+                    var resultInt = operation(arr);
+                    stopWatch.Stop();
+                    elapsed += stopWatch.Elapsed.TotalSeconds;
+                }
+                double averageElapsed = elapsed / 1000000;
+                Console.WriteLine(operation.Method.Name + " for int takes: "
+                    + averageElapsed.ToString("00.0000") + " secs");
             }
 
             Console.WriteLine(new string('*', 50));
 
             foreach (var operation in longOperations)
             {
-                DateTime startTime = DateTime.Now;
-                var resultLong = operation(randomLongs);
-                DateTime endTime = DateTime.Now;
-                TimeSpan elapsed = endTime - startTime;
-                Console.WriteLine(operation.Method.Name + " for long takes: " 
-                    + elapsed.TotalSeconds.ToString("00.0000") + " secs");
+                Stopwatch stopWatch = new Stopwatch();
+
+                long[] arr = { long.MinValue, long.MaxValue };
+                double elapsed = 0;
+                for (int i = 0; i < 1000000; i++)
+                {
+                    stopWatch.Start();
+                    var resultLong = operation(arr);
+                    stopWatch.Stop();
+                    elapsed += stopWatch.Elapsed.TotalSeconds;
+                }
+                double averageElapsed = elapsed / 1000000;
+                Console.WriteLine(operation.Method.Name + " for long takes: "
+                    + averageElapsed.ToString("00.0000") + " secs");
             }
 
             Console.WriteLine(new string('*', 50));
 
             foreach (var operation in floatOperations)
             {
-                DateTime startTime = DateTime.Now;
-                var resultLong = operation(randomFloats);
-                DateTime endTime = DateTime.Now;
-                TimeSpan elapsed = endTime - startTime;
-                Console.WriteLine(operation.Method.Name + " for float takes: " 
-                    + elapsed.TotalSeconds.ToString("00.0000") + " secs");
+                Stopwatch stopWatch = new Stopwatch();
+
+                float[] arr = { float.MinValue, float.MaxValue };
+                double elapsed = 0;
+                for (int i = 0; i < 1000000; i++)
+                {
+                    stopWatch.Start();
+                    var resultLong = operation(arr);
+                    stopWatch.Stop();
+                    elapsed += stopWatch.Elapsed.TotalSeconds;
+                }
+                double averageElapsed = elapsed / 1000000;
+                Console.WriteLine(operation.Method.Name + " for float takes: "
+                    + averageElapsed.ToString("00.0000") + " secs");
             }
 
             Console.WriteLine(new string('*', 50));
 
             foreach (var operation in doubleOperations)
             {
-                DateTime startTime = DateTime.Now;
-                var resultLong = operation(randomDoubles);
-                DateTime endTime = DateTime.Now;
-                TimeSpan elapsed = endTime - startTime;
-                Console.WriteLine(operation.Method.Name + " for double takes: " 
-                    + elapsed.TotalSeconds.ToString("00.0000") + " secs");
+                Stopwatch stopWatch = new Stopwatch();
+
+                double[] arr = { double.MinValue, double.MaxValue };
+                double elapsed = 0;
+                for (int i = 0; i < 1000000; i++)
+                {
+                    stopWatch.Start();
+                    var resultLong = operation(arr);
+                    stopWatch.Stop();
+                    elapsed += stopWatch.Elapsed.TotalSeconds;
+                }
+                double averageElapsed = elapsed / 1000000;
+                Console.WriteLine(operation.Method.Name + " for double takes: "
+                    + averageElapsed.ToString("00.0000") + " secs");
             }
 
             Console.WriteLine(new string('*', 50));
 
             foreach (var operation in decimalOperations)
             {
-                DateTime startTime = DateTime.Now;
-                var resultLong = operation(randomDecimals);
-                DateTime endTime = DateTime.Now;
-                TimeSpan elapsed = endTime - startTime;
+                Stopwatch stopWatch = new Stopwatch();
+
+                decimal[] arr = { 1 , decimal.MaxValue / 200};
+                double elapsed = 0;
+                for (int i = 0; i < 1000000; i++)
+                {
+                    stopWatch.Start();
+                    var resultLong = operation(arr);
+                    stopWatch.Stop();
+                    elapsed += stopWatch.Elapsed.TotalSeconds;
+                }
+                double averageElapsed = elapsed / 1000000;
                 Console.WriteLine(operation.Method.Name + " for decimal takes: "
-                    + elapsed.TotalSeconds.ToString("00.0000") + " secs");
+                    + averageElapsed.ToString("00.0000") + " secs");
             }
         }
 
